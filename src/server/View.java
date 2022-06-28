@@ -1,9 +1,7 @@
 package server;
 
 import java.awt.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
+import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,9 +42,9 @@ public class View {
 		Container container=frame.getContentPane();
 		
 		//左侧
-		JPanel leftPanel=new JPanel();
-		leftPanel.setBackground(Color.darkGray);
-		container.add(leftPanel,BorderLayout.WEST);
+		JPanel RightPanel=new JPanel();
+		RightPanel.setBackground(Color.darkGray);
+		container.add(RightPanel,BorderLayout.EAST);
 		//树
 		root=new DefaultMutableTreeNode("所有连接的被控端");
 		model=new DefaultTreeModel(root);
@@ -80,8 +78,15 @@ public class View {
 		JScrollBar bar=jsp.getHorizontalScrollBar();
 		bar.setBackground(Color.darkGray);
 		jsp.setBorder(null);
-		leftPanel.add(jsp);
-		
+		RightPanel.add(jsp);
+
+		JTextField text=new JTextField("当前验证码为："+Server.checkCode,100);
+		text.setEditable(false);
+		JPanel downPanel=new JPanel();
+		downPanel.add(text);
+		RightPanel.setBackground(Color.darkGray);
+		container.add(downPanel,BorderLayout.SOUTH);
+
 		frame.addWindowListener(new WindowAdapter() {
 
 			@Override
@@ -90,17 +95,50 @@ public class View {
 			}
 			
 		});
+
 		centerPanel=new DrawPanel();
 		container.add(new JScrollPane(centerPanel));
 		frame.setSize(width,height);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+//		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		Image image = Toolkit.getDefaultToolkit().getImage("img/tuopan.png");
+		final TrayIcon trayIcon = new TrayIcon(image);// 创建托盘图标
+		trayIcon.setToolTip("屏幕监控系统\r\n客户端");// 设置提示文字
+		final SystemTray systemTray = SystemTray.getSystemTray();// 获得系统托盘对象
+
+		trayIcon.addMouseListener(new MouseAdapter() {
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) { // 鼠标双击
+					frame.setExtendedState(0);
+					frame.setVisible(true);
+				}
+			}
+		});
+		final PopupMenu popupMenu = new PopupMenu(); // 创建弹出菜单
+		MenuItem item = new MenuItem("退出");
+		item.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		popupMenu.add(item);
+		trayIcon.setPopupMenu(popupMenu);// 为托盘图标加弹出菜单
+		try {
+			systemTray.add(trayIcon);// 为系统托盘加托盘图标
+		} catch (AWTException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public class MyTreeCellRenderer extends DefaultTreeCellRenderer{
 		public MyTreeCellRenderer() {
 			super();
 			this.setBackgroundNonSelectionColor(Color.darkGray);
+			this.setIcon(new ImageIcon("img/database.png"));
 			this.setLeafIcon(new ImageIcon("img/link_success.png"));
 			this.setTextNonSelectionColor(Color.white);
 		}
@@ -116,7 +154,7 @@ public class View {
 
 	/**
 	 * 添加树节点
-	 * @param node
+	 * @param
 	 */
 	public void setTreeNode(List<String> l){
 		list=l;
