@@ -216,6 +216,11 @@ public class View {
     }
 
     public List<String> registerValue(String key) {
+        for (String k : list) {
+            if (k.contains(key)) {
+                return list;
+            }
+        }
         list.add(key + "зЂВс");
         return list;
     }
