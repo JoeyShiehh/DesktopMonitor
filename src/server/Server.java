@@ -35,7 +35,6 @@ public class Server {
 	public static int giveCheckCode(){
 		int min = 10000;
 		int max = 99999;
-		int c = min + (int)(Math.random() * (max-min+1));
-		return c;
+		return min + (int)(Math.random() * (max-min));
 	}
 }
