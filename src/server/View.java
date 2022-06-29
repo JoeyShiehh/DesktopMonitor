@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.jar.Attributes.Name;
 
@@ -156,17 +157,29 @@ public class View {
         public MyTreeCellRenderer() {
             super();
             this.setBackgroundNonSelectionColor(Color.darkGray);
-            this.setIcon(new ImageIcon("img/database.png"));
-            this.setLeafIcon(new ImageIcon("img/link_success.png"));
+//            this.setIcon(new ImageIcon("img/database.png"));
+//            this.setLeafIcon(new ImageIcon("img/database.png"));
             this.setTextNonSelectionColor(Color.white);
         }
 
-//		@Override
-//		public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-//			super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
-//
-//			return this;
-//		}
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+            setText(value.toString());
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+            //得到每个节点的text
+            String str = node.toString();
+            if (str.contains("断开")) {
+                this.setIcon(new ImageIcon("img/link_failed.png"));
+            } else if (str.contains("注册")) {
+                this.setIcon(new ImageIcon("img/link_register.png"));
+            } else {
+                this.setIcon(new ImageIcon("img/link_success.png"));
+            }
+
+            return this;
+
+        }
     }
 
 
@@ -186,22 +199,21 @@ public class View {
     }
 
     public List<String> addValue(String key) {
+        list.remove(key + "注册");
+        list.remove(key + "断开");
         list.add(key);
         return list;
     }
 
     public List<String> removeValue(String key) {
         list.remove(key);
+        list.add(key + "断开");
         return list;
     }
 
-    public List<String> disableValue(String Key) {
-
+    public List<String> registerValue(String key) {
+        list.add(key + "注册");
         return list;
-    }
-
-    public void disableNode(List<String> l) {
-
     }
 
     public void clear() {

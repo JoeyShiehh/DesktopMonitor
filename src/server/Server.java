@@ -11,12 +11,12 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+
 public class Server {
 	public static Map<String,Socket> client=new HashMap<String,Socket>();
+	public static HashSet<String> register_client=new HashSet<String>();
 	public static View view=new View();
 	public static int checkCode;
 	public static String curKey=null;

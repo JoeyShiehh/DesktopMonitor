@@ -3,13 +3,14 @@ package server;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.net.SocketException;
 import java.nio.Buffer;
+import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -24,6 +25,8 @@ public class HandleClient implements Runnable {
     private DataInputStream dis = null;
     private String key = null;
     private boolean isLive = true;
+    private DataOutputStream dos = null;
+    private String reg = null;
 
     public HandleClient(Socket socket) {
         this.socket = socket;
@@ -44,13 +47,15 @@ public class HandleClient implements Runnable {
                 handleType(result.getType(), result.getData());
 
                 //写入文件
-                ByteArrayInputStream in = new ByteArrayInputStream(result.getData());
-                try {
-                    BufferedImage image = ImageIO.read(in);
-                     writeImageFile(image);
-                } catch (IOException | IllegalArgumentException e) {
-                    e.printStackTrace();
-                    System.out.println("Save Filed");
+                if (result.getType() == 1) {
+                    ByteArrayInputStream in = new ByteArrayInputStream(result.getData());
+                    try {
+                        BufferedImage image = ImageIO.read(in);
+                        writeImageFile(image);
+                    } catch (IOException | IllegalArgumentException e) {
+                        e.printStackTrace();
+                        System.out.println("Save Filed");
+                    }
                 }
             }
         }
@@ -58,9 +63,15 @@ public class HandleClient implements Runnable {
 
     //    存储图像文件
     public void writeImageFile(BufferedImage bi) throws IOException {
-        String fileName= "saveImg/"+System.currentTimeMillis()+".png";
-        File outputfile = new File(fileName);
-        ImageIO.write(bi, "png", outputfile);
+        String path = "saveImg/" + key;
+        File dir = new File(path);
+        dir.mkdir();
+        long currentTime = System.currentTimeMillis();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy_MM_dd_-HH_mm_ss_SSS");
+        Date date = new Date(currentTime);
+        String fileName = path + "/" + formatter.format(date) + ".png";
+        File outputFile = new File(fileName);
+        ImageIO.write(bi, "png", outputFile);
     }
 
 
@@ -69,6 +80,14 @@ public class HandleClient implements Runnable {
         System.out.println(type);
         try {
             switch (type) {
+                case 0:
+                    dos = new DataOutputStream(socket.getOutputStream());
+                    reg = "200";
+                    Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
+                    String address = socket.getInetAddress().getHostAddress();
+                    Server.register_client.add(address);
+                    Server.view.setTreeNode(Server.view.registerValue(address));
+                    break;
                 case 1:
                     if (Server.curKey != key) break;
                     ByteArrayInputStream bai = new ByteArrayInputStream(data);
@@ -85,6 +104,12 @@ public class HandleClient implements Runnable {
                     String msg = new String(data);
                     if (msg.equals("client")) {
                         key = socket.getInetAddress().getHostAddress();
+                        if (!Server.register_client.contains(key)) {
+                            dos = new DataOutputStream(socket.getOutputStream());
+                            reg = "500";
+                            Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
+                            break;
+                        }
                         Server.client.put(key, socket);
                         Server.view.setTreeNode(Server.view.addValue(key));
                         if (Server.curKey == null) Server.curKey = key;
@@ -95,7 +120,7 @@ public class HandleClient implements Runnable {
                     Server.client.remove(key);
                     Server.view.centerPanel.setBufferedImage(null);
                     Server.view.centerPanel.repaint();
-                    Server.curKey = null;
+                    Server.curKey = key + "已断开";
                     isLive = false;
                     break;
                 default:

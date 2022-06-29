@@ -50,8 +50,8 @@ public class Client {
 
 	DataOutputStream dos = null;
 	Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
-	int width = (int) screensize.getWidth();
-	int height = (int) screensize.getHeight();
+	double width = screensize.getWidth();
+	double height = screensize.getHeight();
 	Robot robot;
 	static boolean isLive = true;
 	JButton button;
@@ -85,7 +85,7 @@ public class Client {
 	 * @return
 	 */
 	public BufferedImage getScreenShot() {
-		BufferedImage bfImage = robot.createScreenCapture(new Rectangle(0, 0, width, height));
+		BufferedImage bfImage = robot.createScreenCapture(new Rectangle(0, 0, (int) width, (int) height));
 		return bfImage;
 	}
 
@@ -179,7 +179,7 @@ public class Client {
 		while (client.isLive) {
 			client.sendImage(client.getScreenShot());
 			try {
-				Thread.sleep(10);
+				Thread.sleep(1000);
 			} catch (InterruptedException ev) {
 				
 			}
