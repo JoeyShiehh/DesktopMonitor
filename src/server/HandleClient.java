@@ -27,6 +27,7 @@ public class HandleClient implements Runnable {
     private boolean isLive = true;
     private DataOutputStream dos = null;
     private String reg = null;
+    private String[] datas = null;
 
     public HandleClient(Socket socket) {
         this.socket = socket;
@@ -42,6 +43,16 @@ public class HandleClient implements Runnable {
         while (isLive) {
             Result result = null;
             result = Protocol.getResult(dis);
+            String a = null;
+            if (result.getType() == 0) {
+                try {
+                    a = new String(result.getData(), "utf-8");
+                } catch (UnsupportedEncodingException e) {
+                    e.printStackTrace();
+                }
+                datas = a.split(",");
+                System.out.println("data[4]:" + datas[4]);
+            }
 
             if (result != null) {
                 handleType(result.getType(), result.getData());
@@ -82,11 +93,18 @@ public class HandleClient implements Runnable {
             switch (type) {
                 case 0:
                     dos = new DataOutputStream(socket.getOutputStream());
-                    reg = "200";
-                    Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
-                    String address = socket.getInetAddress().getHostAddress();
-                    Server.register_client.add(address);
-                    Server.view.setTreeNode(Server.view.registerValue(address));
+
+                    if (Integer.parseInt(datas[4]) == Server.checkCode) {
+                        reg = "200";
+                        Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
+                        String address = socket.getInetAddress().getHostAddress();
+//                        String address = code[3];
+                        Server.register_client.add(address);
+                        Server.view.setTreeNode(Server.view.registerValue(address));
+                    } else {
+                        reg = "503";// ÑéÖ¤Âë´íÎó
+                        Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
+                    }
                     break;
                 case 1:
                     if (Server.curKey != key) break;
