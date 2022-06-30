@@ -199,6 +199,7 @@ public class View {
     }
 
     public List<String> addValue(String key) {
+        if (key == null) return list;
         list.remove(key + "×¢²á");
         list.remove(key + "¶Ï¿ª");
         list.add(key);
@@ -206,6 +207,7 @@ public class View {
     }
 
     public List<String> removeValue(String key) {
+        if (key == null) return list;
         list.remove(key);
         list.add(key + "¶Ï¿ª");
         return list;

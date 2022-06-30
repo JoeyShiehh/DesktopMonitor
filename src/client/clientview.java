@@ -93,7 +93,6 @@ public class clientview {
                 } else {
                     // JOptionPane.showMessageDialog(frame, "正在请求被监控...", "提示",JOptionPane.WARNING_MESSAGE)
                 }
-
                 clientview cltview = new clientview();
                 cltview.create();
                 final Client client = new Client();

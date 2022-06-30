@@ -1,11 +1,13 @@
 package client;
 
 import myutil.Protocol;
+import myutil.Result;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -17,6 +19,7 @@ import static client.clientview.frame;
 
 public class register {
     private DataOutputStream dos = null;
+    private DataInputStream dis = null;
     private Socket socket;
     public static JFrame frame2 = new JFrame("注册界面");
     public static JLabel label4 = new JLabel("学号");
@@ -70,8 +73,6 @@ public class register {
                     } else if (!(teacher_ip.matches(ip_re) && student_ip.matches(ip_re))) {
                         JOptionPane.showMessageDialog(frame2, "ip格式不对", "提示", JOptionPane.WARNING_MESSAGE);
                         return;
-                    } else {
-
                     }
 
 
@@ -80,8 +81,16 @@ public class register {
                     }
                     socket = new Socket(teamessage[0], Integer.parseInt(teamessage[1]));
                     dos = new DataOutputStream(socket.getOutputStream());
+
                     String reg = stunum + "," + pass1 + "," + stuip1 + "," + teaip1 + "," + teachercode1 + "," + teamessage[0] + "," + teamessage[1];//注册标识，学号，密码，学生IP，老师验证码，老师ip，老师端口
                     Protocol.send(0, reg.getBytes(StandardCharsets.UTF_8), dos);
+                    dis = new DataInputStream(socket.getInputStream());
+                    Result res=Protocol.getResult(dis);
+                    String rString= new String(res.getData());
+                    if (rString.equals("504")){
+                        JOptionPane.showMessageDialog(frame2, "验证码错误，请联系管理员", "提示", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
                 } catch (UnknownHostException unknownHostException) {
                     unknownHostException.printStackTrace();
                 } catch (IOException ioException) {

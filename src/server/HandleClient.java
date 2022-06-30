@@ -88,7 +88,7 @@ public class HandleClient implements Runnable {
 
     //处理类型type的消息
     private void handleType(int type, byte[] data) {
-        System.out.println(type);
+        System.out.println(type+":"+key);
         try {
             switch (type) {
                 case 0:
@@ -102,8 +102,8 @@ public class HandleClient implements Runnable {
                         Server.register_client.add(address);
                         Server.view.setTreeNode(Server.view.registerValue(address));
                     } else {
-                        reg = "503";// 验证码错误
-                        Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
+                        reg = "504";// 验证码错误
+                        Protocol.send(Protocol.TYPE_CONNECT_FAILED, reg.getBytes(StandardCharsets.UTF_8), dos);
                     }
                     break;
                 case 1:
@@ -126,12 +126,23 @@ public class HandleClient implements Runnable {
                             dos = new DataOutputStream(socket.getOutputStream());
                             reg = "500";
                             Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
+                            System.out.println("未注册");
+                            isLive=false;
                             break;
                         }
                         Server.client.put(key, socket);
                         Server.view.setTreeNode(Server.view.addValue(key));
                         if (Server.curKey == null) Server.curKey = key;
                     }
+//                    if(socket.isClosed()){
+//                        Server.view.setTreeNode(Server.view.removeValue(key));
+//                        Server.client.remove(key);
+//                        Server.view.centerPanel.setBufferedImage(null);
+//                        Server.view.centerPanel.repaint();
+//                        Server.curKey = key + "已断开";
+//                        isLive = false;
+//                        break;
+//                    }
                     break;
                 case 3:
                     Server.view.setTreeNode(Server.view.removeValue(key));
