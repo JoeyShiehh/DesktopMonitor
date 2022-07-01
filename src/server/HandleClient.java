@@ -150,6 +150,9 @@ public class HandleClient implements Runnable {
                         isLive = false;
                         break;
                     }
+                    dos = new DataOutputStream(socket.getOutputStream());
+                    reg = "200";
+                    Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
                     Server.client.put(key, socket);
                     Server.view.setTreeNode(Server.view.addValue(key));
                     if (Server.curKey == null) Server.curKey = key;

@@ -94,16 +94,18 @@ public class clientview {
                 } else {
                     // JOptionPane.showMessageDialog(frame, "正在请求被监控...", "提示",JOptionPane.WARNING_MESSAGE)
                 }
-                clientview cltView = new clientview();
-                cltView.create();
+
                 final Client client = new Client();
                 client.conn(teamessage[0], Integer.parseInt(teamessage[1]));
                 int i = client.load((username.getText() + "," + password.getText()).getBytes(StandardCharsets.UTF_8));
+                System.out.println(i);
                 if (i == -1) {
                     JOptionPane.showMessageDialog(frame, "用户名或密码错误", "提示", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
+                clientview cltView = new clientview();
+                cltView.create();
                 client.showSystemTray();
                 JOptionPane.showMessageDialog(frame, "您正在被监控！", "提示", JOptionPane.WARNING_MESSAGE);
                 while (client.isLive) {
