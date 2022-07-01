@@ -1,18 +1,12 @@
 package server;
 import myutil.Protocol;
 
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.*;
-import java.util.List;
 
 public class Server {
 	public static Map<String,Socket> client=new HashMap<String,Socket>();
@@ -21,12 +15,14 @@ public class Server {
 	public static int checkCode;
 	public static String curKey=null;
 	public static boolean serverLive=true;
+	public static SQLiteJDBC sqLitejdbc = null;
 	public static void main(String[] args) {
 		try {
 			System.out.println(InetAddress.getLocalHost());
 		} catch (UnknownHostException e1) {
 			e1.printStackTrace();
 		}
+		sqLitejdbc= new SQLiteJDBC();
 		checkCode = giveCheckCode();
 		try {
 			ServerSocket serverSocket=new ServerSocket(33000);

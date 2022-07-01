@@ -54,6 +54,8 @@ public class View {
         JTree tree = new JTree(model);
         tree.setBackground(Color.darkGray);
 
+        setTreeNode(registerValue(Server.sqLitejdbc.selectAll()));
+
         tree.addTreeSelectionListener(new TreeSelectionListener() {
 
             @Override
@@ -215,6 +217,13 @@ public class View {
 
     public List<String> registerValue(String key) {
         list.add(key + "зЂВс");
+        return list;
+    }
+
+    public List<String> registerValue(List<String> keys) {
+        for (String k : keys) {
+            list.add(k + "зЂВс");
+        }
         return list;
     }
 

@@ -28,6 +28,8 @@ public class HandleClient implements Runnable {
     private DataOutputStream dos = null;
     private String reg = null;
     private String[] datas = null;
+    private String username = null;
+
 
     public HandleClient(Socket socket) {
         this.socket = socket;
@@ -44,21 +46,19 @@ public class HandleClient implements Runnable {
             Result result = null;
             result = Protocol.getResult(dis);
             String a = null;
-            if (result.getType() == 0) {
-                try {
-                    a = new String(result.getData(), "utf-8");
-                } catch (UnsupportedEncodingException e) {
-                    e.printStackTrace();
-                }
-                datas = a.split(",");
-                System.out.println("data[4]:" + datas[4]);
-            }
-
-            if (result != null) {
-                handleType(result.getType(), result.getData());
-
-                //写入文件
-                if (result.getType() == 1) {
+            System.out.println("\nRun " + "Type:" + result.getType());
+            switch (result.getType()) {
+                case 0:
+                    try {
+                        a = new String(result.getData(), "utf-8");
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    datas = a.split(",");
+                    System.out.println("data[4]:" + datas[4]);
+                    handleType(result.getType(), result.getData());
+                    break;
+                case 1://写入文件
                     ByteArrayInputStream in = new ByteArrayInputStream(result.getData());
                     try {
                         BufferedImage image = ImageIO.read(in);
@@ -67,7 +67,20 @@ public class HandleClient implements Runnable {
                         e.printStackTrace();
                         System.out.println("Save Filed");
                     }
-                }
+                    handleType(result.getType(), result.getData());
+                    break;
+                case 2://登录请求
+                    try {
+                        a = new String(result.getData(), "utf-8");
+                        System.out.println(a);
+                    } catch (UnsupportedEncodingException e) {
+                        e.printStackTrace();
+                    }
+                    datas = a.split(",");
+                    handleType(result.getType(), result.getData());
+                    break;
+                default:
+                    handleType(result.getType(), result.getData());
             }
         }
     }
@@ -75,6 +88,7 @@ public class HandleClient implements Runnable {
     //    存储图像文件
     public void writeImageFile(BufferedImage bi) throws IOException {
         String path = "saveImg/" + key;
+        System.out.println(path);
         File dir = new File(path);
         dir.mkdir();
         long currentTime = System.currentTimeMillis();
@@ -88,17 +102,17 @@ public class HandleClient implements Runnable {
 
     //处理类型type的消息
     private void handleType(int type, byte[] data) {
-        System.out.println(type+":"+key);
+        System.out.println("type:" + type + "-key:" + key);
         try {
             switch (type) {
                 case 0:
                     dos = new DataOutputStream(socket.getOutputStream());
-
                     if (Integer.parseInt(datas[4]) == Server.checkCode) {
                         reg = "200";
                         Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
                         String address = socket.getInetAddress().getHostAddress();
-//                        String address = code[3];
+                        Server.sqLitejdbc.insert(datas[0], datas[1], address);
+                        System.out.println("exe insert");
                         Server.register_client.add(address);
                         Server.view.setTreeNode(Server.view.registerValue(address));
                     } else {
@@ -110,46 +124,41 @@ public class HandleClient implements Runnable {
                     if (Server.curKey != key) break;
                     ByteArrayInputStream bai = new ByteArrayInputStream(data);
                     BufferedImage buff = ImageIO.read(bai);
-//                    double scale = 540 / (double)buff.getHeight();
                     double scale = 1;
-                    System.out.println(buff.getHeight());
+//                    System.out.println(buff.getHeight());
                     buff = scale(buff, scale);
                     Server.view.centerPanel.setBufferedImage(buff);//为屏幕监控视图设置BufferedImage
                     Server.view.centerPanel.repaint();
                     bai.close();
                     break;
                 case 2:
-                    String msg = new String(data);
-                    if (msg.equals("client")) {
-                        key = socket.getInetAddress().getHostAddress();
-                        if (!Server.register_client.contains(key)) {
-                            dos = new DataOutputStream(socket.getOutputStream());
-                            reg = "500";
-                            Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
-                            System.out.println("未注册");
-                            isLive=false;
-                            break;
-                        }
-                        Server.client.put(key, socket);
-                        Server.view.setTreeNode(Server.view.addValue(key));
-                        if (Server.curKey == null) Server.curKey = key;
+                    key = socket.getInetAddress().getHostAddress();
+                    if (!Server.register_client.contains(key)) {
+                        dos = new DataOutputStream(socket.getOutputStream());
+                        reg = "500";
+                        Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
+                        System.out.println("未注册");
+                        isLive = false;
+                        break;
                     }
-//                    if(socket.isClosed()){
-//                        Server.view.setTreeNode(Server.view.removeValue(key));
-//                        Server.client.remove(key);
-//                        Server.view.centerPanel.setBufferedImage(null);
-//                        Server.view.centerPanel.repaint();
-//                        Server.curKey = key + "已断开";
-//                        isLive = false;
-//                        break;
-//                    }
+                    System.out.println(datas[0]+"::"+datas[1]);
+                    if (!Server.sqLitejdbc.select(datas[0], datas[1])) {
+                        dos = new DataOutputStream(socket.getOutputStream());
+                        reg = "500";//密码错误
+                        Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
+                        isLive = false;
+                        break;
+                    }
+                    Server.client.put(key, socket);
+                    Server.view.setTreeNode(Server.view.addValue(key));
+                    if (Server.curKey == null) Server.curKey = key;
                     break;
                 case 3:
                     Server.view.setTreeNode(Server.view.removeValue(key));
                     Server.client.remove(key);
                     Server.view.centerPanel.setBufferedImage(null);
                     Server.view.centerPanel.repaint();
-                    Server.curKey = key + "已断开";
+                    Server.curKey = key + "断开";
                     isLive = false;
                     break;
                 default:

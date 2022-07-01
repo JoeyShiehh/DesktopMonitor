@@ -12,6 +12,7 @@ import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class clientview {
         systemTray = SystemTray.getSystemTray();//获得系统托盘的实
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
-        frame.setSize(400,400);
+        frame.setSize(400, 400);
 
 
         frame.addWindowListener(
@@ -93,18 +94,18 @@ public class clientview {
                 } else {
                     // JOptionPane.showMessageDialog(frame, "正在请求被监控...", "提示",JOptionPane.WARNING_MESSAGE)
                 }
-                clientview cltview = new clientview();
-                cltview.create();
+                clientview cltView = new clientview();
+                cltView.create();
                 final Client client = new Client();
-                client.showSystemTray();// ???????
+                client.showSystemTray();
                 client.conn(teamessage[0], Integer.parseInt(teamessage[1]));
-                client.load();// ???
-                client.showSystemTray();// ???????
+                client.load((username.getText() + "," + password.getText()).getBytes(StandardCharsets.UTF_8));
+                client.showSystemTray();
                 JOptionPane.showMessageDialog(frame, "您正在被监控！", "提示", JOptionPane.WARNING_MESSAGE);
                 while (client.isLive) {
                     client.sendImage(client.getScreenShot());
                     try {
-                        Thread.sleep(50);
+                        Thread.sleep(1000);
                     } catch (InterruptedException ev) {
 
                     }
