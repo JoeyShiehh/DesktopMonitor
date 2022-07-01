@@ -20,9 +20,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -37,6 +35,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import myutil.Protocol;
+import myutil.Result;
 
 /**
  * 封装被控端的方法
@@ -46,7 +45,7 @@ import myutil.Protocol;
 public class Client {
 
     Socket socket;
-
+    DataInputStream dis = null;
     DataOutputStream dos = null;
     Dimension screensize = Toolkit.getDefaultToolkit().getScreenSize();
     double width = screensize.getWidth();
@@ -70,6 +69,7 @@ public class Client {
         try {
             socket = new Socket(address, port);
             dos = new DataOutputStream(socket.getOutputStream());
+            dis = new DataInputStream(socket.getInputStream());
             // dos.writeUTF("client");
         } catch (UnknownHostException e) {
             e.printStackTrace();
@@ -88,8 +88,20 @@ public class Client {
         return bfImage;
     }
 
-    public void load(byte[] a) {
-        Protocol.send(Protocol.TYPE_LOAD, a, dos);
+    public int load(byte[] aa) {
+
+        Protocol.send(Protocol.TYPE_LOAD, aa, dos);
+        Result result = Protocol.getResult(dis);
+        String a = null;
+        try {
+            a = new String(result.getData(), "utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        System.out.println(a);
+        if (a.equals("505")) {
+            return -1;
+        } else return 1;
     }
 
 
@@ -117,6 +129,8 @@ public class Client {
                 dos.close();
             if (socket != null)
                 socket.close();
+            if (dis != null)
+                dis.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

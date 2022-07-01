@@ -144,7 +144,8 @@ public class HandleClient implements Runnable {
                     System.out.println(datas[0]+"::"+datas[1]);
                     if (!Server.sqLitejdbc.select(datas[0], datas[1])) {
                         dos = new DataOutputStream(socket.getOutputStream());
-                        reg = "500";//ÃÜÂë´íÎó
+                        reg = "505";//ÃÜÂë´íÎó
+                        System.out.println("ÃÜÂë´íÎó");
                         Protocol.send(4, reg.getBytes(StandardCharsets.UTF_8), dos);
                         isLive = false;
                         break;

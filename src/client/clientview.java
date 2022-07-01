@@ -97,9 +97,13 @@ public class clientview {
                 clientview cltView = new clientview();
                 cltView.create();
                 final Client client = new Client();
-                client.showSystemTray();
                 client.conn(teamessage[0], Integer.parseInt(teamessage[1]));
-                client.load((username.getText() + "," + password.getText()).getBytes(StandardCharsets.UTF_8));
+                int i = client.load((username.getText() + "," + password.getText()).getBytes(StandardCharsets.UTF_8));
+                if (i == -1) {
+                    JOptionPane.showMessageDialog(frame, "用户名或密码错误", "提示", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
+
                 client.showSystemTray();
                 JOptionPane.showMessageDialog(frame, "您正在被监控！", "提示", JOptionPane.WARNING_MESSAGE);
                 while (client.isLive) {
