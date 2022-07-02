@@ -13,6 +13,8 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.math.BigInteger;
+import java.security.MessageDigest;
 
 import static client.clientview.frame;
 
@@ -21,21 +23,21 @@ public class register {
     private DataOutputStream dos = null;
     private DataInputStream dis = null;
     private Socket socket;
-    public static JFrame frame2 = new JFrame("×¢²á½çÃæ");
-    public static JLabel label4 = new JLabel("Ñ§ºÅ");
+    public static JFrame frame2 = new JFrame("æ³¨å†Œç•Œé¢");
+    public static JLabel label4 = new JLabel("å­¦å·");
     public static JTextField usrname = new JTextField(8);
-    public static JLabel label5 = new JLabel("ÃÜÂë");
+    public static JLabel label5 = new JLabel("å¯†ç ");
     public static JTextField pass = new JPasswordField(8);
-    public static JLabel label6 = new JLabel("È·ÈÏÃÜÂë");
+    public static JLabel label6 = new JLabel("ç¡®è®¤å¯†ç ");
     public static JTextField conpass = new JPasswordField(8);
-    public static JLabel label7 = new JLabel("Ñ§Éúip(Àı£º192.36.25.153£º30000)");
+    public static JLabel label7 = new JLabel("å­¦ç”Ÿip(ä¾‹ï¼š192.36.25.153ï¼š30000)");
 
     public static JTextField stuip = new JTextField(8);
-    public static JLabel label8 = new JLabel("ÀÏÊ¦ip(Àı£º192.36.25.153£º30000)");
+    public static JLabel label8 = new JLabel("è€å¸ˆip(ä¾‹ï¼š192.36.25.153ï¼š30000)");
     public static JTextField teaip = new JTextField(8);
-    public static JLabel label9 = new JLabel("ÀÏÊ¦ÑéÖ¤Âë");
+    public static JLabel label9 = new JLabel("è€å¸ˆéªŒè¯ç ");
     public static JTextField teacode = new JTextField(18);
-    public static JButton rregisterbtn = new JButton("×¢²á");
+    public static JButton rregisterbtn = new JButton("æ³¨å†Œ");
 
     public register() {
 
@@ -59,19 +61,19 @@ public class register {
                     String student_ip = stumessage[0];
                     String ip_re = "(0\\d{2}|0\\d|\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(0\\d{2}|0\\d|\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}";
                     if ("".equals(stunum) || "".equals(pass1) || "".equals(stuip1) || "".equals(teaip1) || "".equals(teachercode1)) {
-                        JOptionPane.showMessageDialog(frame2, "ÏûÏ¢²»ÄÜÎª¿Õ", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame2, "æ¶ˆæ¯ä¸èƒ½ä¸ºç©º", "æç¤º", JOptionPane.WARNING_MESSAGE);
                         return;
                     } else if (!pass1.equals(conpass1)) {
-                        JOptionPane.showMessageDialog(frame2, "Á½´ÎÃÜÂëÊäÈë²»Ò»ÖÂ", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame2, "ä¸¤æ¬¡å¯†ç è¾“å…¥ä¸ä¸€è‡´", "æç¤º", JOptionPane.WARNING_MESSAGE);
                         return;
                     } else if (teamessage.length != 2 || stumessage.length != 2) {
-                        JOptionPane.showMessageDialog(frame2, "ip¸ñÊ½²»¶Ô", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame2, "ipæ ¼å¼ä¸å¯¹", "æç¤º", JOptionPane.WARNING_MESSAGE);
                         return;
                     } else if (teacher_ip.length() < 7 || teacher_ip.length() > 15 || student_ip.length() < 7 || student_ip.length() > 15) {
-                        JOptionPane.showMessageDialog(frame2, "ip¸ñÊ½²»¶Ô", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame2, "ipæ ¼å¼ä¸å¯¹", "æç¤º", JOptionPane.WARNING_MESSAGE);
                         return;
                     } else if (!(teacher_ip.matches(ip_re) && student_ip.matches(ip_re))) {
-                        JOptionPane.showMessageDialog(frame2, "ip¸ñÊ½²»¶Ô", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame2, "ipæ ¼å¼ä¸å¯¹", "æç¤º", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
@@ -81,14 +83,22 @@ public class register {
                     }
                     socket = new Socket(teamessage[0], Integer.parseInt(teamessage[1]));
                     dos = new DataOutputStream(socket.getOutputStream());
-
-                    String reg = stunum + "," + pass1 + "," + stuip1 + "," + teaip1 + "," + teachercode1 + "," + teamessage[0] + "," + teamessage[1];//×¢²á±êÊ¶£¬Ñ§ºÅ£¬ÃÜÂë£¬Ñ§ÉúIP£¬ÀÏÊ¦ÑéÖ¤Âë£¬ÀÏÊ¦ip£¬ÀÏÊ¦¶Ë¿Ú
+                    try {
+                        MessageDigest md = MessageDigest.getInstance("MD5");
+                        md.update(pass1.getBytes());
+                        String md_pass = new BigInteger(1, md.digest()).toString(16);
+                        System.out.println(md_pass);
+                    } catch(Exception e){
+                        String md_pass = pass1;
+                        e.printStackTrace();
+                    }
+                    String reg = stunum + "," + /*pass1*/ md_pass + "," + stuip1 + "," + teaip1 + "," + teachercode1 + "," + teamessage[0] + "," + teamessage[1];//æ³¨å†Œæ ‡è¯†ï¼Œå­¦å·ï¼Œå¯†ç ï¼Œå­¦ç”ŸIPï¼Œè€å¸ˆéªŒè¯ç ï¼Œè€å¸ˆipï¼Œè€å¸ˆç«¯å£
                     Protocol.send(0, reg.getBytes(StandardCharsets.UTF_8), dos);
                     dis = new DataInputStream(socket.getInputStream());
                     Result res=Protocol.getResult(dis);
                     String rString= new String(res.getData());
                     if (rString.equals("504")){
-                        JOptionPane.showMessageDialog(frame2, "ÑéÖ¤Âë´íÎó£¬ÇëÁªÏµ¹ÜÀíÔ±", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(frame2, "éªŒè¯ç é”™è¯¯ï¼Œè¯·è”ç³»ç®¡ç†å‘˜", "æç¤º", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
                 } catch (UnknownHostException unknownHostException) {
@@ -103,13 +113,13 @@ public class register {
 
             }
         });
-        //ÉèÖÃ°´ÏÂÓÒÉÏ½ÇXºÅºó¹Ø±Õ
+        //è®¾ç½®æŒ‰ä¸‹å³ä¸Šè§’Xå·åå…³é—­
         frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        //µ÷ÓÃº¯Êı³õÊ¼»¯´°ÌåµÄ×é¼ş
+        //è°ƒç”¨å‡½æ•°åˆå§‹åŒ–çª—ä½“çš„ç»„ä»¶
         initFrame2();
-        //ĞÂ´°¿ÚÓë¾É´°¿Ú´í¿ª50ÏñËØ¡£
-        //´°¿Ú¿É¼û
+        //æ–°çª—å£ä¸æ—§çª—å£é”™å¼€50åƒç´ ã€‚
+        //çª—å£å¯è§
         frame2.setVisible(true);
     }
 
