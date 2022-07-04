@@ -19,31 +19,33 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 
 public class clientview {
-    public static JFrame frame = new JFrame("µÇÂ¼½çÃæ");
-    //µÇÂ½½çÃæ×é¼ş
-    public static JLabel label1 = new JLabel("ÓÃ»§Ãû");                 //±êÇ©
-    public static JTextField username = new JTextField(10);            //ÎÄ±¾¿ò
-    public static JLabel label2 = new JLabel("ÃÜ   Âë");
-    public static JTextField password = new JPasswordField(10);         //ÃÜÂëÎÄ±¾¿ò
+    public static JFrame frame = new JFrame("ç™»å½•ç•Œé¢");
+    //ç™»é™†ç•Œé¢ç»„ä»¶
+    public static JLabel label1 = new JLabel("ç”¨æˆ·å");                 //æ ‡ç­¾
+    public static JTextField username = new JTextField(10);            //æ–‡æœ¬æ¡†
+    public static JLabel label2 = new JLabel("å¯†   ç ");
+    public static JTextField password = new JPasswordField(10);         //å¯†ç æ–‡æœ¬æ¡†
 
-    public static JLabel label3 = new JLabel("ÀÏÊ¦IPµØÖ·");
+    public static JLabel label3 = new JLabel("è€å¸ˆIPåœ°å€");
     public static JTextField teacherip = new JTextField(10);
+    public static JLabel label4 = new JLabel("ç›‘æ§é¢‘ç‡");
+    public static JTextField frequency = new JTextField(10);
 
 
-    public static JButton Signinbtn = new JButton("µÇÂ¼");              //°´Å¥
-    public static JButton registerbtn = new JButton("×¢²á");
-    private TrayIcon trayIcon;//ÍĞÅÌÍ¼±ê
-    private SystemTray systemTray;//ÏµÍ³ÍĞÅÌ
+    public static JButton Signinbtn = new JButton("ç™»å½•");              //æŒ‰é’®
+    public static JButton registerbtn = new JButton("æ³¨å†Œ");
+    private TrayIcon trayIcon;//æ‰˜ç›˜å›¾æ ‡
+    private SystemTray systemTray;//ç³»ç»Ÿæ‰˜ç›˜
 
 
-    //ÒÔÏÂ±ØĞëÎª¾²Ì¬µÄ£¬·ñÔòÔÚHandleClientÀï·ÃÎÊ²»µ½
+    //ä»¥ä¸‹å¿…é¡»ä¸ºé™æ€çš„ï¼Œå¦åˆ™åœ¨HandleClienté‡Œè®¿é—®ä¸åˆ°
     static DefaultTreeModel model;
     static DefaultMutableTreeNode root;
     static DrawPanel centerPanel;
     static List<String> list = new ArrayList<>();
 
     public clientview() {
-        systemTray = SystemTray.getSystemTray();//»ñµÃÏµÍ³ÍĞÅÌµÄÊµ
+        systemTray = SystemTray.getSystemTray();//è·å¾—ç³»ç»Ÿæ‰˜ç›˜çš„å®
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
         frame.setSize(400, 400);
@@ -54,7 +56,7 @@ public class clientview {
                     public void windowIconified(WindowEvent e) {
                         try {
                             trayIcon = new TrayIcon(Toolkit.getDefaultToolkit().getImage("img/icon.png"));
-                            systemTray.add(trayIcon);//ÉèÖÃÍĞÅÌµÄÍ¼±ê
+                            systemTray.add(trayIcon);//è®¾ç½®æ‰˜ç›˜çš„å›¾æ ‡
                         } catch (AWTException e2) {
                             e2.printStackTrace();
                         }
@@ -89,19 +91,19 @@ public class clientview {
                 String tea_ip =  teamessage[0];
                 String ip_re = "(0\\d{2}|0\\d|\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])(\\.(0\\d{2}|0\\d|\\d|[1-9]\\d|1\\d{2}|2[0-4]\\d|25[0-5])){3}";
                 if ("".equals(username.getText()) || "".equals(password.getText()) || "".equals(teacherip.getText())) {
-                    JOptionPane.showMessageDialog(frame, "ÏûÏ¢²»ÄÜÎª¿Õ", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "æ¶ˆæ¯ä¸èƒ½ä¸ºç©º", "æç¤º", JOptionPane.WARNING_MESSAGE);
                     return;
                 } else if (teamessage.length != 2) {
-                    JOptionPane.showMessageDialog(frame, "ip¸ñÊ½²»¶Ô", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "ipæ ¼å¼ä¸å¯¹", "æç¤º", JOptionPane.WARNING_MESSAGE);
                     return;
                 } else if(tea_ip.length()<7||tea_ip.length()>15){
-                    JOptionPane.showMessageDialog(frame, "ip¸ñÊ½²»¶Ô", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "ipæ ¼å¼ä¸å¯¹", "æç¤º", JOptionPane.WARNING_MESSAGE);
                     return;
                 } else if(!(tea_ip.matches(ip_re))){
-                    JOptionPane.showMessageDialog(frame, "ip¸ñÊ½²»¶Ô", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "ipæ ¼å¼ä¸å¯¹", "æç¤º", JOptionPane.WARNING_MESSAGE);
                     return;
                 } else {
-                    // JOptionPane.showMessageDialog(frame, "ÕıÔÚÇëÇó±»¼à¿Ø...", "ÌáÊ¾",JOptionPane.WARNING_MESSAGE)
+                    // JOptionPane.showMessageDialog(frame, "æ­£åœ¨è¯·æ±‚è¢«ç›‘æ§...", "æç¤º",JOptionPane.WARNING_MESSAGE)
                 }
 
                 final Client client = new Client();
@@ -120,18 +122,28 @@ public class clientview {
                 int i = client.load((username.getText() + "," + /*password.getText()*/md_pass).getBytes(StandardCharsets.UTF_8));
                 System.out.println(i);
                 if (i == -1) {
-                    JOptionPane.showMessageDialog(frame, "ÓÃ»§Ãû»òÃÜÂë´íÎó", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                    JOptionPane.showMessageDialog(frame, "ç”¨æˆ·åæˆ–å¯†ç é”™è¯¯", "æç¤º", JOptionPane.WARNING_MESSAGE);
                     return;
                 }
 
                 clientview cltView = new clientview();
                 cltView.create();
                 client.showSystemTray();
-                JOptionPane.showMessageDialog(frame, "ÄúÕıÔÚ±»¼à¿Ø£¡", "ÌáÊ¾", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(frame, "æ‚¨æ­£åœ¨è¢«ç›‘æ§ï¼", "æç¤º", JOptionPane.WARNING_MESSAGE);
                 while (client.isLive) {
                     client.sendImage(client.getScreenShot());
                     try {
-                        Thread.sleep(1000);
+                        if("".equals(frequency.getText())) {
+                            Thread.sleep(1000);
+                        } else{
+                            String frequency_str = frequency.getText();
+                            try{
+                                int fre = Integer.parseInt(frequency_str);
+                                Thread.sleep(fre);
+                            } catch(NumberFormatException nfe){
+                                Thread.sleep(1000);
+                            }
+                        }
                     } catch (InterruptedException ev) {
 
                     }
@@ -142,11 +154,11 @@ public class clientview {
         });
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //µ÷ÓÃº¯Êı³õÊ¼»¯´°ÌåµÄ×é¼ş
+        //è°ƒç”¨å‡½æ•°åˆå§‹åŒ–çª—ä½“çš„ç»„ä»¶
         initFrame();
-        //´°¿Ú¾ÓÖĞ
+        //çª—å£å±…ä¸­
         frame.setLocationRelativeTo(null);
-        //´°¿Ú¿É¼û
+        //çª—å£å¯è§
         frame.setVisible(true);
 
 
@@ -154,34 +166,39 @@ public class clientview {
 
 
     public void initFrame() {
-        //¶¨ÒåÃæ°å·â×°ÎÄ±¾¿òºÍ±êÇ©
-        JPanel panel01 = new JPanel(new FlowLayout(FlowLayout.CENTER));  //¾ÓÖĞÃæ°å
-        panel01.add(label1);
-        panel01.add(username);
+        //å®šä¹‰é¢æ¿å°è£…æ–‡æœ¬æ¡†å’Œæ ‡ç­¾
+        JPanel panel1 = new JPanel(new FlowLayout(FlowLayout.CENTER));  //å±…ä¸­é¢æ¿
+        panel1.add(label1);
+        panel1.add(username);
 
-        JPanel panel02 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panel02.add(label2);
-        panel02.add(password);
+        JPanel panel2 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panel2.add(label2);
+        panel2.add(password);
 
-        JPanel panel03 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panel03.add(label3);
-        panel03.add(teacherip);
+        JPanel panel3 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panel3.add(label3);
+        panel3.add(teacherip);
+
+        JPanel panel4 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panel4.add(label4);
+        panel4.add(frequency);
 
 
-        //¶¨ÒåÃæ°å·â×°°´Å¥
-        JPanel panel05 = new JPanel(new FlowLayout(FlowLayout.CENTER));
-        panel05.add(Signinbtn);
-        panel05.add(registerbtn);
+        //å®šä¹‰é¢æ¿å°è£…æŒ‰é’®
+        JPanel panel5 = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        panel5.add(Signinbtn);
+        panel5.add(registerbtn);
 
-        //ÏäÊ½²¼¾Ö×°ÈëÈı¸öÃæ°å
+        //ç®±å¼å¸ƒå±€è£…å…¥ä¸‰ä¸ªé¢æ¿
         BorderLayout borderLayout = new BorderLayout();
         Box vBox = Box.createVerticalBox();
-        vBox.add(panel01);
-        vBox.add(panel02);
-        vBox.add(panel03);
-        vBox.add(panel05);
+        vBox.add(panel1);
+        vBox.add(panel2);
+        vBox.add(panel3);
+        vBox.add(panel4);
+        vBox.add(panel5);
 
-        //½«²¼¾ÖÖÃÈë´°¿Ú
+        //å°†å¸ƒå±€ç½®å…¥çª—å£
         frame.setContentPane(vBox);
     }
     //
@@ -191,7 +208,7 @@ public class clientview {
 
     public void create() {
 
-        JFrame frame = new JFrame("Ô¶³ÌÆÁÄ»¼àÊÓÏµÍ³");
+        JFrame frame = new JFrame("è¿œç¨‹å±å¹•ç›‘è§†ç³»ç»Ÿ");
         Container container = frame.getContentPane();
 
     }
